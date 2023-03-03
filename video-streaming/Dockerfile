@@ -8,6 +8,7 @@ RUN npm install --only=production
 
 COPY server.js ./
 
-COPY karina.mp4 ./
+COPY karina-blackmamba.mp4 ./
+# COPY haerin-omg.mp4 ./
 
 CMD npm start
