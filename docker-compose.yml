@@ -1,14 +1,39 @@
-version: '3'
-
+version: "3"
 services:
-  video-streaming:
-    image: liking-box-video-streaming.kr.ncr.ntruss.com/video-streaming:blackmamba
-    # build: 
-    #   context: ./video-streaming
-    #   dockerfile: Dockerfile
-    # container_name: video-streaming
+  db:
+    image: mongo
+    container_name: db
     ports:
-      - "4000:80"
+      - "4000:27017"
+    restart: always
+
+  azure-storage:
+    image: azure-storage
+    build:
+      context: ./azure-storage
+      dockerfile: Dockerfile
+    container_name: video-storage
+    ports:
+      - "4001:80"
     environment:
       - PORT=80
+      - STORAGE_ACCOUNT_NAME=devopsmgt
+      - STORAGE_ACCESS_KEY=TtQ8HtlXfittlM8Sydl0DmzNQWPJUace8ZfjOyOzis/QvW3yNow1u4Wh2+kevYllnln08QDlyfXT+AStlKE0gw==
+    restart: "no"
+
+  video-streaming:
+    # image: liking-box-video-streaming.kr.ncr.ntruss.com/video-streaming:blackmamba
+    image: video-streaming
+    build:
+      context: ./video-streaming
+      dockerfile: Dockerfile
+    container_name: video-streaming
+    ports:
+      - "4002:80"
+    environment:
+      - PORT=80
+      - DB_HOST=mongodb://db:27017
+      - DB_NAME=video-streaming
+      - VIDEO_STORAGE_HOST=video-storage
+      - VIDEO_STORAGE_PORT=80
     restart: "no"
